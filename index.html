@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CRASHLENS — See the Patterns Behind Your Day</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#070B16;--navy:#0B1020;--card:#111A2D;--blue:#3867FF;--cyan:#00D4FF;--vio:#8B5CF6;--tx:#F5F7FF;--mu:#929DB5;--bd:rgba(146,157,181,.16);box-sizing:border-box}
+html{scroll-padding-top:70px}*,*:before,*:after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:Manrope,system-ui,sans-serif;line-height:1.55;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+h1,h2,h3{margin:0;letter-spacing:-.035em;line-height:1.04}
+h1,h2.big{font-size:clamp(2.8rem,7vw,6rem);font-weight:800}
+h2{font-size:clamp(2rem,4.5vw,3.6rem);font-weight:800}
+h3{font-size:1.1rem;font-weight:600;letter-spacing:-.01em}
+p{margin:0;color:var(--mu)}a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+.wrap{max-width:1100px;margin:0 auto;padding:0 24px}
+nav{position:fixed;top:0;left:0;right:0;z-index:30;padding-top:env(safe-area-inset-top,0px);background:rgba(7,11,22,.6);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;height:52px;font-size:.82rem}
+.logo{font-weight:800;letter-spacing:.1em;font-size:.9rem}
+nav ul{display:flex;gap:30px;list-style:none;margin:0;padding:0;color:var(--mu)}nav ul a:hover{color:var(--tx)}
+.btn{display:inline-block;padding:13px 26px;border-radius:99px;font:600 .95rem Manrope;border:0;cursor:pointer;color:var(--tx);background:rgba(255,255,255,.1);transition:background .2s,transform .2s}
+.btn.p{background:var(--blue)}.btn.p:hover{background:#5578ff}.btn:hover{background:rgba(255,255,255,.18)}
+.view{display:none}.view.on{display:block}
+#cv{position:fixed;inset:0;width:100%;height:100%;z-index:0;display:block}
+#cv2{position:fixed;inset:0;width:100%;height:100%;z-index:0;display:none;opacity:0}
+#mods{height:820vh}
+#ov2{position:fixed;inset:0;z-index:2;pointer-events:none;display:none}
+.tz{position:absolute;left:max(24px,6vw);top:50%;transform:translateY(-50%);max-width:500px;opacity:0;transition:opacity .4s}.tz.on{opacity:1}
+.tz h2{font-size:clamp(2rem,4.6vw,3.8rem)}.tz p{font-size:1.1rem;margin-top:18px}.tz small{display:block;color:var(--cyan);font-size:.8rem;letter-spacing:.1em;margin-bottom:16px}
+.tz ul{margin:22px 0 0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:8px}.tz li{font-size:.8rem;padding:6px 13px;border-radius:99px;background:rgba(255,255,255,.08);color:var(--tx)}
+#rail{position:fixed;right:22px;top:50%;transform:translateY(-50%);z-index:2;display:none;flex-direction:column;gap:10px}#rail i{width:6px;height:6px;border-radius:50%;background:#33415f;transition:.3s}#rail i.on{background:var(--cyan);height:22px;border-radius:3px}
+@media(max-width:860px){.tz{top:auto;bottom:8vh;transform:none;left:24px;right:44px}.tz p{font-size:1rem}}
+#story{position:relative;height:620vh}
+#ov{position:fixed;inset:0;z-index:2;pointer-events:none}
+.tx{position:absolute;left:max(24px,6vw);top:50%;transform:translateY(-50%);max-width:520px;opacity:0;transition:opacity .35s}
+.tx.on{opacity:1}.tx.on .btn{pointer-events:auto}
+.tx p{font-size:1.15rem;margin-top:22px;max-width:440px}.tx .btn{margin:30px 12px 0 0}
+.tx small{display:block;color:var(--cyan);font-size:.8rem;letter-spacing:.14em;margin-bottom:20px}
+.lb{position:fixed;z-index:2;font-size:.78rem;color:var(--tx);pointer-events:none;opacity:0;white-space:nowrap;padding-left:14px;border-left:1px solid rgba(255,255,255,.4)}
+.lb i{display:block;font-style:normal;color:var(--mu);font-size:.72rem}
+.scrl{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);z-index:2;width:1px;height:42px;background:linear-gradient(var(--mu),transparent);transition:opacity .4s}
+.after{position:relative;z-index:3;background:var(--bg)}
+section.s{padding:140px 0}
+.card{background:var(--card);border-radius:22px;padding:28px}
+.sim{display:grid;grid-template-columns:340px 1fr;gap:16px;margin-top:48px}
+.ctl{margin-bottom:26px}.ctl label{display:flex;justify-content:space-between;font-size:.9rem;font-weight:600;margin-bottom:10px}.ctl label span{color:var(--cyan)}
+input[type=range]{width:100%;accent-color:var(--blue);height:28px}
+.cmp{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.met h4{margin:0 0 4px;font-size:.85rem;color:var(--mu);font-weight:500}.met .v{font-size:2.4rem;font-weight:800;letter-spacing:-.03em}.met .d{font-size:.85rem;font-weight:600}
+.pill{display:inline-block;font-size:.75rem;padding:4px 12px;border-radius:99px;background:rgba(139,92,246,.18);color:#c4b5fd}
+.note{font-size:.8rem;color:var(--mu);margin-top:14px}.demo{font-size:.76rem;color:var(--mu);margin-top:8px}
+details{border-top:1px solid var(--bd);padding:22px 0}details:last-child{border-bottom:1px solid var(--bd)}
+summary{cursor:pointer;font-size:1.35rem;font-weight:600;letter-spacing:-.02em;list-style:none;display:flex;justify-content:space-between}
+summary::after{content:"+";color:var(--mu);transition:transform .2s}details[open] summary::after{transform:rotate(45deg)}
+details p{margin-top:12px;max-width:640px}details .k{color:var(--tx);font-size:.9rem;margin-top:10px}
+.dash{display:grid;grid-template-columns:230px 1fr;min-height:100vh;padding-top:52px;background:var(--bg);position:relative;z-index:3}
+.side{border-right:1px solid var(--bd);padding:24px 14px;position:sticky;top:52px;height:calc(100vh - 52px);display:flex;flex-direction:column;gap:4px}
+.side a{padding:10px 14px;border-radius:10px;font-size:.92rem;color:var(--mu);cursor:pointer}.side a.on,.side a:hover{background:var(--card);color:var(--tx)}
+.dm{padding:40px;min-width:0}.dg{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:20px}.dg svg{width:100%;height:130px;margin-top:10px}
+.ins{margin-top:14px;display:grid;gap:12px}.ins div{padding:14px 16px;background:var(--navy);border-radius:12px;font-size:.9rem;color:var(--mu)}.ins b{color:var(--tx)}
+.q{display:flex;align-items:center;gap:8px}.q i{width:8px;height:8px;border-radius:50%;background:#3ddc97}
+.flow{display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;gap:10px;margin-top:50px;align-items:stretch}
+.fl{padding:22px;background:var(--card);border-radius:18px;font-size:.9rem;color:var(--mu)}.fl b{display:block;color:var(--tx);margin-bottom:6px}.fl.g{box-shadow:inset 0 0 0 1px var(--vio)}.arr{align-self:center;color:var(--mu)}
+.tog{display:inline-flex;align-items:center;gap:12px;margin-top:26px;cursor:pointer;font-size:.9rem}.sw{width:44px;height:26px;border-radius:13px;background:#26324d;position:relative;transition:.2s;flex:none}.sw:after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:var(--tx);transition:.2s}.tog.on .sw{background:var(--blue)}.tog.on .sw:after{left:21px}
+footer{padding:60px 0;text-align:center;color:var(--mu);font-size:.8rem}
+.modal{position:fixed;inset:0;z-index:50;background:rgba(3,6,14,.7);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px}.modal[hidden]{display:none}
+.mc{width:100%;max-width:400px;position:relative;display:grid;gap:12px}.mc .row{display:flex;gap:10px}.mc .row .btn{flex:1}
+.mc input,.logf input{background:var(--navy);border:1px solid var(--bd);border-radius:10px;padding:11px 13px;color:var(--tx);font:inherit;width:100%}
+#a-x{position:absolute;top:14px;right:16px;background:none;border:0;color:var(--mu);font-size:1.4rem;cursor:pointer}
+.logf{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-top:16px;align-items:end}.logf label{font-size:.78rem;color:var(--mu);display:grid;gap:6px}
+@media(max-width:860px){nav ul{display:none}.tx{top:auto;bottom:9vh;transform:none;left:24px;right:24px}.sim,.dash{grid-template-columns:1fr}.cmp,.dg{grid-template-columns:1fr}.flow{grid-template-columns:1fr}.arr{transform:rotate(90deg);text-align:center}.side{position:static;height:auto;flex-direction:row;overflow-x:auto}.side a{white-space:nowrap}.dm{padding:24px 16px}section.s{padding:90px 0}.lb{display:none}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head><body>
+<nav><div class="wrap"><a href="#home" class="logo">CRASHLENS</a>
+<ul><li><a href="#sim">What-If</a></li><li><a href="#mods">Modules</a></li><li><a href="#priv">Privacy</a></li><li><a href="#dashboard">Dashboard</a></li></ul>
+<span><button class="btn" id="acct" style="padding:7px 16px;font-size:.8rem;margin-right:8px">Sign in</button><a href="#dashboard" class="btn p" style="padding:7px 16px;font-size:.8rem">Explore</a></span></div></nav>
+
+<main id="v-home" class="view on">
+<canvas id="cv" aria-label="Interactive 3D lens made of five lifestyle layers"></canvas><canvas id="cv2" aria-hidden="true"></canvas>
+<div id="story"></div><div id="mods"></div>
+<div id="ov">
+<div class="tx on"><small>PREDICTIVE LIFESTYLE INTELLIGENCE</small><h1>Your life has patterns.</h1><p>CRASHLENS connects your everyday lifestyle data, uncovers hidden behavioral patterns, and helps you explore how small changes could influence your routine.</p><a href="#dashboard" class="btn p">Explore CRASHLENS</a><a href="#story" class="btn" data-go="1">Discover how it works</a></div>
+<div class="tx"><h2 class="big" style="font-size:clamp(2.2rem,5.5vw,4.6rem)">Five signals. Five apps. No story.</h2><p>Sleep, activity, screen time, schedule, focus. Each lives somewhere different and tells only part of your day.</p></div>
+<div class="tx"><h2 class="big" style="font-size:clamp(2.2rem,5.5vw,4.6rem)">Bring them into focus.</h2><p>Connect your data and CRASHLENS lines every layer up into one view, measured against your own baseline.</p></div>
+<div class="tx"><h2 class="big" style="font-size:clamp(2.2rem,5.5vw,4.6rem)">See what moves together.</h2><p>Discover possible relationships between sleep, screens, movement and focus. These are correlations, not proven causes.</p></div>
+<div class="tx"><h2 class="big" style="font-size:clamp(2.2rem,5.5vw,4.6rem)">Seven modules. One system.</h2><p>Keep scrolling to see what each one does with your data.</p></div></div>
+<div id="ov2">
+<div class="tz"><small>Module 01</small><h2>Personal Data Hub</h2><p>Everyday lifestyle information, gathered into one organized space.</p><ul><li>Sleep records</li><li>Activity</li><li>Screen-time logs</li><li>Calendar</li><li>Focus and energy</li></ul></div>
+<div class="tz"><small>Module 02</small><h2>Personal Baseline Intelligence</h2><p>Measured against your own history, not a generic average. The glass plane is your baseline.</p><ul><li>Daily averages</li><li>Weekday vs weekend</li><li>Historical trends</li><li>Baseline comparison</li></ul></div>
+<div class="tz"><small>Module 03</small><h2>Pattern Discovery Engine</h2><p>Possible relationships between factors. Solid lines are observed correlations, dashed lines are weak links. None are proven causes.</p><ul><li>Sleep vs focus</li><li>Screen time vs sleep</li><li>Activity vs energy</li><li>Routine comparisons</li></ul></div>
+<div class="tz"><small>Module 04</small><h2>AI Insight Explanation</h2><p>Plain-language explanations of statistics already calculated. The AI never invents numbers.</p><ul><li>Evidence</li><li>Sample size</li><li>Observation period</li><li>Confidence</li><li>Data quality</li></ul></div>
+<div class="tz"><small>Module 05</small><h2>What-If Simulator</h2><p>Grey is your historical pattern. Cyan is a hypothetical change. These are estimates, not predictions.</p><ul><li>Sleep</li><li>Screen time</li><li>Activity</li><li>Before and after</li></ul></div>
+<div class="tz"><small>Module 06</small><h2>Habit Experiment Lab</h2><p>Turn an insight into a personal experiment and compare each day against your baseline strand.</p><ul><li>Pick a habit</li><li>Choose a period</li><li>Record daily</li><li>Review what changed</li></ul></div>
+<div class="tz"><small>Module 07</small><h2>Privacy Centre</h2><p>Local-first processing. Derived statistics leave the shell only through the consent gate.</p><ul><li>Local processing</li><li>Consent gate</li><li>Sharing preview</li><li>Export</li><li>Delete</li></ul></div></div>
+<div id="rail"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+<div class="scrl" id="scrl"></div>
+<div class="after">
+<section class="s" id="sim"><div class="wrap"><h2>What if you changed one thing?</h2><p style="margin-top:18px;max-width:560px;font-size:1.1rem">Move a slider. See a hypothetical day next to your history.</p><div class="sim" id="simA"></div></div></section>
+<section class="s" id="modlist" style="padding-top:40px"><div class="wrap"><h2>Every module, in detail.</h2><div style="margin-top:48px">
+<details><summary>Personal Data Hub</summary><p>Sleep, activity, screen time, calendar and self-reported focus in one organized space.</p></details>
+<details><summary>Personal Baseline Intelligence</summary><p>Your own daily averages, weekday versus weekend patterns and historical trends, instead of generic averages.</p></details>
+<details><summary>Pattern Discovery Engine</summary><p>Possible relationships such as sleep versus focus and screen time versus sleep.</p><p class="k">Always shown as correlation, never as proven cause.</p></details>
+<details><summary>AI Insight Explanation</summary><p>Plain-language explanations of statistics CRASHLENS has already calculated, with sample size, observation period, confidence and data quality. The AI does not invent numbers.</p></details>
+<details><summary>What-If Simulator</summary><p>Hypothetical changes compared with your history. Estimates, not guaranteed predictions.</p></details>
+<details><summary>Habit Experiment Lab</summary><p>Pick a habit, choose a period, record daily observations and compare against your baseline.</p></details>
+<details><summary>Privacy Centre</summary><p>Local-first processing, consent before any derived statistics reach an AI service, sharing previews, export and delete.</p></details></div></div></section>
+<section class="s" id="priv" style="background:var(--navy)"><div class="wrap"><h2>Personal intelligence. Personal control.</h2><p style="margin-top:18px;max-width:600px;font-size:1.1rem">Raw information is designed to stay stored and processed locally wherever possible. Derived statistics reach an external AI service only after you say yes.</p>
+<div class="flow"><div class="fl"><b>Personal data</b>Sleep, activity, screen time, calendar.</div><div class="arr">→</div><div class="fl"><b>Local processing</b>Averages and patterns calculated on your device.</div><div class="arr">→</div><div class="fl g"><b>Consent gate</b>You preview exactly what would be shared.</div><div class="arr">→</div><div class="fl"><b>Optional AI explanation</b>Summaries only, never raw logs.</div></div>
+<div class="tog" id="consent" role="switch" aria-checked="false" tabindex="0"><span class="sw"></span><span id="ctxt">Sharing with AI is off. Nothing leaves your device.</span></div></div></section>
+<section class="s" style="text-align:center"><div class="wrap"><h2>Stop just tracking your life.<br>Start understanding it.</h2><p style="margin:22px 0 34px">Discover the connections behind your everyday habits.</p><a href="#dashboard" class="btn p">Explore your patterns</a></div></section>
+<footer><div class="logo" style="color:var(--tx)">CRASHLENS</div><p style="margin-top:6px;letter-spacing:.14em">SEE THE PATTERNS BEHIND YOUR DAY.</p><p style="margin-top:6px">Presented by HACKHOLICS</p></footer></div>
+</main>
+
+<main id="v-dashboard" class="view"><div class="dash"><aside class="side" id="side"></aside>
+<div class="dm"><p id="dlabel" style="color:var(--cyan);font-size:.8rem">Demonstration data</p><h2 style="margin-top:8px">Your Personal Intelligence Overview</h2>
+<p id="dnote" style="margin-top:12px">All figures are generated samples, not real user statistics.</p>
+<div class="dg" id="dg"></div>
+<div class="dg"><div class="card"><h3>Recent insights</h3><div class="ins">
+<div><b>Longer sleep nights tend to follow lower evening screen time.</b><br>Possible link, not a proven cause. 14 days observed, moderate confidence.</div>
+<div><b>Self-reported focus is higher on days with 30+ minutes of activity.</b><br>Sample of 14 days. More observations would strengthen this.</div></div></div>
+<div class="card"><h3>Data quality</h3><div class="ins"><div class="q"><i></i>Sleep: 14 / 14 days</div><div class="q"><i></i>Screen time: 14 / 14 days</div><div class="q"><i style="background:#f5b942"></i>Activity: 11 / 14 days</div><div class="q"><i style="background:#f5b942"></i>Focus: 9 / 14 days</div></div></div></div></div></div></main>
+
+<main id="v-simulator" class="view"><section class="s after" style="padding-top:140px;min-height:100vh"><div class="wrap"><h2>Compare history with a hypothetical day.</h2><div class="sim" id="simB"></div></div></section></main>
+
+<div class="modal" id="auth" hidden role="dialog" aria-modal="true" aria-label="Sign in"><div class="mc card"><h3>Sign in to CRASHLENS</h3><p id="am-note" style="font-size:.9rem"></p><input id="a-e" type="email" placeholder="Email" autocomplete="email"><input id="a-p" type="password" placeholder="Password" autocomplete="current-password"><div class="row"><button class="btn p" id="a-in">Sign in</button><button class="btn" id="a-up">Create account</button></div><button class="btn" id="a-g" hidden>Continue with Google</button><button class="btn" id="a-guest">Continue as guest</button><p id="a-msg" class="demo"></p><button id="a-x" aria-label="Close">×</button></div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+function route(){let h=location.hash.slice(1);if(['sim','mods','priv'].includes(h))h='home';if(!['home','dashboard','simulator'].includes(h))h='home';
+$$('.view').forEach(v=>v.classList.toggle('on',v.id==='v-'+h));cvOn=h==='home';if(h!=='home')scrollTo(0,0);buildSims()}
+let cvOn=true;addEventListener('hashchange',route);
+$$('[data-go]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();const y=a.dataset.go==='1'?innerHeight*1.2:$('#sim').offsetTop;scrollTo({top:y,behavior:'smooth'})}));
+$$('nav a[href^="#"],.after a[href^="#"]').forEach(a=>{const h=a.getAttribute('href');if(['#sim','#mods','#priv'].includes(h))a.addEventListener('click',e=>{e.preventDefault();if(location.hash&&!['#home',''].includes(location.hash)){location.hash='home';setTimeout(()=>$(h).scrollIntoView({behavior:'smooth'}),80)}else $(h).scrollIntoView({behavior:'smooth'})})});
+/* ---------- sample data ---------- */
+const D={sleep:[6.5,7.1,6.2,7.6,7.0,8.1,7.8,6.6,6.9,7.2,6.0,7.4,8.0,7.5],screen:[6.1,5.2,6.8,4.6,5.5,4.2,4.4,6.0,5.6,5.0,7.0,4.9,4.1,4.8],act:[30,42,20,45,35,60,55,28,33,40,15,44,58,47],focus:[58,66,52,72,64,76,74,56,62,68,48,70,78,71]};
+const avg=a=>a.reduce((x,y)=>x+y)/a.length;
+function chart(data,col,min,max,unit){const w=300,h=130,p=8;const pts=data.map((v,i)=>[p+i*(w-2*p)/(data.length-1),h-p-(v-min)/(max-min)*(h-2*p)]);
+const d=pts.map((q,i)=>(i?'L':'M')+q[0].toFixed(1)+' '+q[1].toFixed(1)).join('');
+const id='g'+Math.random().toString(36).slice(2,7);
+return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" role="img"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${col}" stop-opacity=".28"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></linearGradient></defs><path d="${d}L${w-p} ${h}L${p} ${h}Z" fill="url(#${id})"/><path d="${d}" fill="none" stroke="${col}" stroke-width="2" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"><animate attributeName="stroke-dashoffset" from="1" to="0" dur="1.2s" fill="freeze"/></path>${pts.map((q,i)=>`<circle cx="${q[0]}" cy="${q[1]}" r="4" fill="${col}" fill-opacity="0"><title>Day ${i+1}: ${data[i]}${unit}</title></circle>`).join('')}</svg>`}
+/* dashboard */
+$('#side').innerHTML=['Overview','My Data','Personal Baseline','Discover Patterns','What-If Simulator','Habit Experiments','Privacy Centre','Settings'].map((n,i)=>`<a class="${i?'':'on'}" ${n==='What-If Simulator'?'href="#simulator"':''}>${n}</a>`).join('');
+$('#dg').innerHTML=[['Sleep trend','h','var(--cyan)',D.sleep,5,9,' h'],['Screen-time trend','h','var(--vio)',D.screen,3,8,' h'],['Activity patterns','min','var(--blue)',D.act,10,65,' min'],['Self-reported focus','/100','#3ddc97',D.focus,40,85,'/100']].map(c=>`<div class="card"><div style="display:flex;justify-content:space-between"><h3>${c[0]}</h3><span class="pill" style="border-color:var(--bd);color:var(--mu)">avg ${avg(c[3]).toFixed(1)} ${c[1]}</span></div>${chart(c[3],c[2].replace('var(--cyan)','#00D4FF').replace('var(--vio)','#8B5CF6').replace('var(--blue)','#3867FF'),c[4],c[5],c[6])}<div class="demo">Last 14 days · demonstration data</div></div>`).join('');
+$$('#side a').forEach(a=>a.addEventListener('click',()=>{if(!a.getAttribute('href')){$$('#side a').forEach(x=>x.classList.remove('on'));a.classList.add('on')}}));
+/* ---------- simulator ---------- */
+const B={sleep:avg(D.sleep),screen:avg(D.screen),act:avg(D.act)};
+const model=(s,sc,a)=>{const cl=(v)=>Math.max(0,Math.min(100,v));
+return{focus:cl(avg(D.focus)+6*(s-B.sleep)-2.2*(sc-B.screen)+.12*(a-B.act)),energy:cl(62+5*(s-B.sleep)-1.2*(sc-B.screen)+.25*(a-B.act)),rest:cl(70+8*(s-B.sleep)-1.8*(sc-B.screen)+.1*(a-B.act))}};
+function simHTML(){return `<div class="card"><div class="ctl"><label>Sleep duration <span class="o-s"></span></label><input type="range" class="r-s" min="4" max="10" step=".1" value="${B.sleep.toFixed(1)}" aria-label="Sleep hours"></div>
+<div class="ctl"><label>Screen time <span class="o-c"></span></label><input type="range" class="r-c" min="0" max="12" step=".1" value="${B.screen.toFixed(1)}" aria-label="Screen hours"></div>
+<div class="ctl"><label>Daily activity <span class="o-a"></span></label><input type="range" class="r-a" min="0" max="120" step="5" value="${Math.round(B.act/5)*5}" aria-label="Activity minutes"></div>
+<span class="pill">Hypothetical estimate</span><div class="note">Assumptions: illustrative linear coefficients applied to the 14-day sample baseline (about +6 focus points per extra sleep hour, −2 per extra screen hour, +1 per 8 activity minutes). Not scientifically validated and not a guaranteed prediction.</div></div>
+<div class="card"><h3>Scenario visualization</h3><svg class="viz" viewBox="0 0 520 240" style="width:100%;margin-top:14px"></svg><p class="sum" style="margin-top:8px;font-size:.92rem"></p></div>
+<div class="grid cmp"></div><p class="demo" style="grid-column:1/-1">Based on demonstration data. Correlation in historical patterns does not prove cause.</p>`}
+function wire(root){root.innerHTML=simHTML();const q=s=>$(s,root);
+const upd=()=>{const s=+q('.r-s').value,c=+q('.r-c').value,a=+q('.r-a').value;
+q('.o-s').textContent=s.toFixed(1)+' h';q('.o-c').textContent=c.toFixed(1)+' h';q('.o-a').textContent=a+' min';
+const b=model(B.sleep,B.screen,B.act),n=model(s,c,a);const keys=[['focus','Focus score'],['energy','Energy score'],['rest','Rest quality']];
+q('.viz').innerHTML=keys.map((k,i)=>{const y=30+i*70;return `<text x="0" y="${y-8}" fill="#929DB5" font-size="12" font-family="Manrope">${k[1]}</text><rect x="0" y="${y}" width="480" height="10" rx="5" fill="#1b2742"/><rect x="0" y="${y}" width="${b[k[0]]*4.8}" height="10" rx="5" fill="#929DB5" opacity=".55"/><rect x="0" y="${y+14}" width="480" height="10" rx="5" fill="#1b2742"/><rect x="0" y="${y+14}" width="${n[k[0]]*4.8}" height="10" rx="5" fill="#00D4FF" style="transition:width .4s"/>`}).join('')+`<text x="0" y="236" fill="#929DB5" font-size="11" font-family="Manrope">grey = historical · cyan = hypothetical</text>`;
+q('.cmp').innerHTML=keys.map(k=>{const d=n[k[0]]-b[k[0]];return `<div class="card met"><h4>${k[1]}</h4><div class="v">${n[k[0]].toFixed(0)}<span style="font-size:1rem;color:var(--mu)"> / 100</span></div><div class="d" style="color:${d>=0?'#3ddc97':'#ff8a8a'}">${d>=0?'+':''}${d.toFixed(1)} vs historical ${b[k[0]].toFixed(0)}</div></div>`}).join('');
+const ds=s-B.sleep,dc=c-B.screen;q('.sum').textContent=`Scenario: ${s.toFixed(1)} h sleep (${ds>=0?'+':''}${ds.toFixed(1)}), ${c.toFixed(1)} h screen (${dc>=0?'+':''}${dc.toFixed(1)}), ${a} min activity. Estimated focus ${(n.focus-b.focus>=0?'rises':'falls')} by about ${Math.abs(n.focus-b.focus).toFixed(1)} points under these sample assumptions.`};
+$$('input',root).forEach(i=>i.addEventListener('input',upd));upd()}
+wire($('#simA'));$('#simA').dataset.b=1;
+
+function buildSims(){const v=location.hash==='#simulator'?$('#simB'):null;if(v&&!v.dataset.b){wire(v);v.dataset.b=1}}
+/* ---------- accounts, data entry, CSV import ---------- */
+const CFG={url:'',key:''}; // paste your Supabase Project URL and anon key here to turn on real accounts
+const D0=JSON.parse(JSON.stringify(D)),insD=$$('#v-dashboard .ins').map(e=>e.innerHTML);
+let sb=null,user=null,rows=[];
+const F={sleep:'sleep_h',screen:'screen_h',act:'activity_min',focus:'focus'},LS={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const store={async load(){if(sb&&user){const{data}=await sb.from('daily_logs').select('*').order('day');return data||[]}return LS.get('cl_logs')||[]},
+async put(rs){if(sb&&user){await sb.from('daily_logs').upsert(rs.map(r=>({...r,user_id:user.id})))}else{const m=new Map((LS.get('cl_logs')||[]).map(r=>[r.day,r]));rs.forEach(r=>m.set(r.day,r));LS.set('cl_logs',[...m.values()])}},
+async clear(){if(sb&&user){await sb.from('daily_logs').delete().neq('day','1900-01-01')}else LS.set('cl_logs',[])}};
+const inr=(v,a,b)=>v!==''&&v!=null&&isFinite(+v)&&+v>=a&&+v<=b;
+function clean(r){return /^\d{4}-\d{2}-\d{2}$/.test(r.day)&&inr(r.sleep_h,0,24)&&inr(r.screen_h,0,24)&&inr(r.activity_min,0,1440)&&inr(r.focus,0,100)?{day:r.day,sleep_h:+r.sleep_h,screen_h:+r.screen_h,activity_min:+r.activity_min,focus:+r.focus}:null}
+function corr(a,b){const n=a.length,ma=avg(a),mb=avg(b);let s=0,x=0,y=0;for(let i=0;i<n;i++){s+=(a[i]-ma)*(b[i]-mb);x+=(a[i]-ma)**2;y+=(b[i]-mb)**2}return x&&y?s/Math.sqrt(x*y):0}
+function rng(a){const lo=Math.min(...a),hi=Math.max(...a),p=(hi-lo)*.15+.01;return[lo-p,hi+p]}
+function renderDash(u){const cs=[['Sleep trend','h','#00D4FF',D.sleep,' h'],['Screen-time trend','h','#8B5CF6',D.screen,' h'],['Activity patterns','min','#3867FF',D.act,' min'],['Self-reported focus','/100','#3ddc97',D.focus,'/100']];
+$('#dg').innerHTML=cs.map(c=>{const[l,h]=rng(c[3]);return `<div class="card"><div style="display:flex;justify-content:space-between"><h3>${c[0]}</h3><span class="pill" style="background:rgba(146,157,181,.15);color:var(--mu)">avg ${avg(c[3]).toFixed(1)} ${c[1]}</span></div>${chart(c[3],c[2],l,h,c[4])}<div class="demo">${u?'Your last '+c[3].length+' logged days':'Last 14 days · demonstration data'}</div></div>`}).join('');
+$('#dlabel').textContent=u?'Your data':'Demonstration data';
+$('#dnote').textContent=u?`Calculated from the ${rows.length} days you logged. Stored ${sb&&user?'in your account':'in this browser only'}.`:'All figures are generated samples, not real user statistics.'+(rows.length?' Log at least 3 days to switch to your own data.':'');
+const ins=$$('#v-dashboard .ins');if(!u){ins[0].innerHTML=insD[0];ins[1].innerHTML=insD[1];return}
+const col=k=>rows.map(r=>+r[F[k]]),n=rows.length,conf=n<7?'low':n<21?'moderate':'higher';
+ins[0].innerHTML=[['sleep','focus','Sleep and focus'],['screen','sleep','Screen time and sleep'],['act','focus','Activity and focus']].map(([a,b,t])=>{const r=corr(col(a),col(b)),m=Math.abs(r);return `<div><b>${t}: ${m<.2?'no clear relationship':m<.5?'a weak to moderate relationship':'a stronger relationship'}${m<.2?'':r>0?', moving together':', moving in opposite directions'}.</b><br>r = ${r.toFixed(2)} across ${n} days. A possible link, not a proven cause. Confidence: ${conf}.</div>`}).join('');
+const span=Math.round((new Date(rows[n-1].day)-new Date(rows[0].day))/864e5)+1,cov=n/span;
+ins[1].innerHTML=`<div class="q"><i></i>Days logged: ${n}</div><div class="q"><i></i>${rows[0].day} to ${rows[n-1].day}</div><div class="q"><i style="background:${cov<.8?'#f5b942':'#3ddc97'}"></i>Coverage: ${Math.round(cov*100)}% of days in that range</div>`}
+function applyData(rs){rows=rs.slice().sort((a,b)=>a.day<b.day?-1:1);const u=rows.length>=3,src=u?rows.slice(-14):null;
+['sleep','screen','act','focus'].forEach(k=>{D[k]=u?src.map(r=>+r[F[k]]):D0[k].slice()});
+B.sleep=avg(D.sleep);B.screen=avg(D.screen);B.act=avg(D.act);renderDash(u);wire($('#simA'));$('#simB').dataset.b='';buildSims()}
+$('#dg').insertAdjacentHTML('beforebegin',`<div class="card" style="margin-top:24px"><h3>Add your data</h3><p id="who" style="margin-top:6px;font-size:.9rem"></p><div class="logf"><label>Date<input type="date" id="f-d"></label><label>Sleep (h)<input type="number" id="f-s" step=".1" min="0" max="24"></label><label>Screen (h)<input type="number" id="f-c" step=".1" min="0" max="24"></label><label>Activity (min)<input type="number" id="f-a" min="0" max="1440"></label><label>Focus (0-100)<input type="number" id="f-f" min="0" max="100"></label><button class="btn p" id="f-go">Save day</button></div><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px"><label class="btn" style="cursor:pointer">Import CSV<input type="file" id="f-csv" accept=".csv,text/csv" hidden></label><button class="btn" id="f-exp">Export CSV</button><button class="btn" id="f-clr">Delete my data</button></div><p class="demo" id="f-msg">CSV columns: day,sleep_h,screen_h,activity_min,focus (day as YYYY-MM-DD).</p></div>`);
+$('#f-d').value=new Date().toISOString().slice(0,10);
+const fm=t=>$('#f-msg').textContent=t,reload=async()=>applyData(await store.load());
+$('#f-go').onclick=async()=>{const r=clean({day:$('#f-d').value,sleep_h:$('#f-s').value,screen_h:$('#f-c').value,activity_min:$('#f-a').value,focus:$('#f-f').value});if(!r)return fm('Please fill every field with a valid value.');try{await store.put([r]);await reload();fm('Saved '+r.day+'.')}catch(e){fm('Could not save. Try again.')}};
+$('#f-csv').onchange=async e=>{const f=e.target.files[0];if(!f)return;const L=(await f.text()).trim().split(/\r?\n/),h=L.shift().toLowerCase().split(',').map(s=>s.trim()),ix=k=>h.indexOf(k);if(ix('day')<0)return fm('First row must be the header: day,sleep_h,screen_h,activity_min,focus');
+const ok=[];let bad=0;L.forEach(l=>{const c=l.split(',').map(s=>s.trim()),r=clean({day:c[ix('day')],sleep_h:c[ix('sleep_h')],screen_h:c[ix('screen_h')],activity_min:c[ix('activity_min')],focus:c[ix('focus')]});r?ok.push(r):bad++});
+try{if(ok.length)await store.put(ok);await reload();fm(`Imported ${ok.length} rows, skipped ${bad}.`)}catch(x){fm('Import failed.')};e.target.value=''};
+$('#f-exp').onclick=()=>{const t='day,sleep_h,screen_h,activity_min,focus\n'+rows.map(r=>[r.day,r.sleep_h,r.screen_h,r.activity_min,r.focus].join(',')).join('\n'),a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/csv'}));a.download='crashlens-data.csv';a.click()};
+let armed=0;$('#f-clr').onclick=async e=>{if(!armed){armed=1;e.target.textContent='Click again to confirm';setTimeout(()=>{armed=0;e.target.textContent='Delete my data'},4000);return}armed=0;e.target.textContent='Delete my data';try{await store.clear();await reload();fm('Your data was deleted.')}catch(x){fm('Could not delete.')}};
+const am=$('#auth'),amsg=t=>$('#a-msg').textContent=t,cloud=!!(CFG.url&&CFG.key);
+const openA=()=>{am.hidden=false;amsg('');$('#am-note').textContent=cloud?'Sign in to save your data to your account.':'Accounts are not configured in this version. Continue as guest to keep data in this browser only.';['a-e','a-p','a-in','a-up'].forEach(i=>$('#'+i).style.display=cloud?'':'none');$('#a-g').hidden=!cloud;$('#a-in').parentElement.style.display=cloud?'':'none'};
+$('#acct').onclick=async()=>{if(user&&sb){await sb.auth.signOut()}else openA()};$('#a-x').onclick=$('#a-guest').onclick=()=>am.hidden=true;addEventListener('keydown',e=>{if(e.key==='Escape')am.hidden=true});
+$('#a-in').onclick=async()=>{const{error}=await sb.auth.signInWithPassword({email:$('#a-e').value,password:$('#a-p').value});error?amsg(error.message):am.hidden=true};
+$('#a-up').onclick=async()=>{const{data,error}=await sb.auth.signUp({email:$('#a-e').value,password:$('#a-p').value});if(error)amsg(error.message);else if(data.session)am.hidden=true;else amsg('Check your email to confirm your account.')};
+$('#a-g').onclick=()=>sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.href.split('#')[0]}});
+async function refresh(){$('#acct').textContent=user?'Sign out':'Sign in';$('#who').textContent=user?`Signed in as ${user.email}. Saved to your account.`:'Guest mode. Saved only in this browser.';try{applyData(await store.load())}catch(e){applyData([])}}
+(async()=>{if(cloud){await new Promise(r=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/dist/umd/supabase.js';s.onload=r;s.onerror=r;document.head.appendChild(s)});if(window.supabase){sb=supabase.createClient(CFG.url,CFG.key);const{data}=await sb.auth.getSession();user=data.session?data.session.user:null;sb.auth.onAuthStateChange((_,s)=>{user=s?s.user:null;refresh()})}}await refresh()})();
+const cs=$('#consent');const tg=()=>{cs.classList.toggle('on');const on=cs.classList.contains('on');cs.setAttribute('aria-checked',on);$('#ctxt').textContent=on?'Sharing on. Only derived statistics (for example "average sleep: 7.1 h") are sent, after you preview them.':'Sharing with AI is off. Nothing leaves your device.'};
+cs.addEventListener('click',tg);cs.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();tg()}});
+/* ---------- scroll-driven 3D lens ---------- */
+(function(){const cv=$('#cv');if(!window.THREE)return;
+const mob=innerWidth<860,rm=matchMedia('(prefers-reduced-motion:reduce)').matches;
+const R=new THREE.WebGLRenderer({canvas:cv,antialias:!mob,alpha:true});R.setPixelRatio(Math.min(devicePixelRatio,mob?1.5:2));
+const S=new THREE.Scene(),C=new THREE.PerspectiveCamera(36,1,.1,60);
+const root=new THREE.Group();S.add(root);
+const L=[['Sleep',0x3867FF,2.1,'7.1 h average'],['Activity',0x00D4FF,1.85,'38 min a day'],['Screen time',0x8B5CF6,1.6,'5.4 h a day'],['Schedule',0x6f8cff,1.35,'6 events'],['Focus and energy',0xcfeaff,1.05,'self-reported']];
+const discs=L.map((d,i)=>{const g=new THREE.Group(),r=d[2];
+g.add(new THREE.Mesh(new THREE.CylinderGeometry(r,r,.05,64,1).rotateX(Math.PI/2),new THREE.MeshPhysicalMaterial({color:d[1],transparent:true,opacity:.16,roughness:.02,metalness:0,clearcoat:1,side:2,depthWrite:false})));
+g.add(new THREE.Mesh(new THREE.TorusGeometry(r,.035,16,96),new THREE.MeshStandardMaterial({color:0xdfe6ff,metalness:.95,roughness:.22,emissive:d[1],emissiveIntensity:.25})));
+const tp=[];for(let k=0;k<72;k++){const a=k/72*6.2832,l=k%6?.05:.12;tp.push(new THREE.Vector3(Math.cos(a)*(r-.1),Math.sin(a)*(r-.1),0),new THREE.Vector3(Math.cos(a)*(r-.1-l),Math.sin(a)*(r-.1-l),0))}
+g.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(tp),new THREE.LineBasicMaterial({color:d[1],transparent:true,opacity:.55})));
+const m=new THREE.Mesh(new THREE.SphereGeometry(.09,16,16),new THREE.MeshBasicMaterial({color:0xffffff}));m.position.set(0,r-.28,0);g.add(m);
+root.add(g);return g});
+const beam=new THREE.Mesh(new THREE.CylinderGeometry(.02,.02,14,12).rotateX(Math.PI/2),new THREE.MeshBasicMaterial({color:0x00D4FF,transparent:true,opacity:0,blending:2,depthWrite:false}));root.add(beam);
+const NP=[];for(let i=0;i<(mob?40:70);i++){const a=Math.random()*6.28,r=Math.random()*1.7;NP.push(new THREE.Vector3(Math.cos(a)*r,Math.sin(a)*r,(Math.random()-.5)*2.4))}
+const nodes=new THREE.Points(new THREE.BufferGeometry().setFromPoints(NP),new THREE.PointsMaterial({color:0x00D4FF,size:.08,transparent:true,opacity:0}));root.add(nodes);
+const lp=[];NP.forEach((a,i)=>NP.forEach((b,j)=>{if(j>i&&a.distanceTo(b)<.75)lp.push(a,b)}));
+const net=new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(lp),new THREE.LineBasicMaterial({color:0x3867FF,transparent:true,opacity:0}));root.add(net);
+const dp=[];for(let i=0;i<(mob?80:200);i++)dp.push(new THREE.Vector3((Math.random()-.5)*26,(Math.random()-.5)*16,-Math.random()*18));
+S.add(new THREE.Points(new THREE.BufferGeometry().setFromPoints(dp),new THREE.PointsMaterial({color:0x929DB5,size:.03,transparent:true,opacity:.45})));
+S.add(new THREE.AmbientLight(0x6677aa,.8));const l1=new THREE.PointLight(0x00D4FF,3,30);l1.position.set(5,4,6);S.add(l1);const l2=new THREE.PointLight(0x3867FF,3,30);l2.position.set(-5,-3,5);S.add(l2);
+const sm=t=>t*t*(3-2*t),kf=(a,t)=>{const i=Math.min(4,Math.max(0,Math.floor(t))),f=sm(Math.min(1,Math.max(0,t-i)));return a[i]+(a[i+1]-a[i])*f};
+const SP=[.12,1.15,.5,.4,.4,.4],AL=[.5,0,1,1,1,1],LBL=[0,1,.2,0,0,0],BM=[0,0,0,.5,.7,.7],ND=[0,0,0,1,.9,.9],
+CX=[3.4,8.5,3.5,0,0,0],CY=[1.4,1.2,1,.2,0,0],CZ=[8.5,3.5,8,7.2,.2,.2],LX=[0,0,0,0,0,0],RY=[-.5,0,-.2,0,0,0];
+const lbs=L.map(d=>{const e=document.createElement('div');e.className='lb';e.innerHTML=d[0]+'<i>'+d[3]+'</i>';document.body.appendChild(e);return e});
+const txs=$$('.tx');let mx=0,my=0,tx=0,ty=0,T=0;
+addEventListener('pointermove',e=>{mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5},{passive:true});
+function size(){R.setSize(innerWidth,innerHeight,false);C.aspect=innerWidth/innerHeight;C.updateProjectionMatrix()}size();addEventListener('resize',size);
+const clk=new THREE.Clock(),v=new THREE.Vector3();let last=-1;
+function loop(){requestAnimationFrame(loop);if(!cvOn){cv.style.display='none';lbs.forEach(e=>e.style.opacity=0);return}cv.style.display='block';
+const st=$('#story'),total=st.offsetHeight-innerHeight,y=scrollY,p=Math.min(1,y/total),t=p*5;
+const after=y>total?Math.min(1,(y-total)/(innerHeight*.5)):0;cv.style.opacity=1-after;$('#scrl').style.opacity=y<60?1:0;
+txs.forEach((e,i)=>e.classList.toggle('on',y<=total+10&&Math.abs(t-i-.5)<.5||(i==0&&t<.5)));
+const tt=Math.min(t,5),time=clk.getElapsedTime();tx+=(mx-tx)*.05;ty+=(my-ty)*.05;
+const sp=kf(SP,tt),al=kf(AL,tt);
+discs.forEach((g,i)=>{g.position.z=(i-2)*sp;g.rotation.z=(1-al)*(i*1.25+(rm?0:time*.12*(i%2?-1:1)))+(rm?0:time*.05*al)});
+beam.material.opacity=kf(BM,tt)*(.6+.2*Math.sin(time*2));nodes.material.opacity=kf(ND,tt);net.material.opacity=kf(ND,tt)*.4;
+root.rotation.y=kf(RY,tt)+tx*.35+(rm?0:Math.sin(time*.2)*.05);root.rotation.x=ty*.25;
+C.position.set(kf(CX,tt),kf(CY,tt),kf(CZ,tt));C.lookAt(0,0,tt>4?-3:0);
+root.scale.setScalar(1);
+R.render(S,C);
+const lo=kf(LBL,tt);root.updateMatrixWorld();
+lbs.forEach((e,i)=>{v.set(0,L[i][2],0);discs[i].localToWorld(v);v.project(C);e.style.opacity=lo*(1-after);e.style.transform=`translate(${(v.x*.5+.5)*innerWidth+10}px,${(-v.y*.5+.5)*innerHeight-14}px)`;e.style.left=0;e.style.top=0})}
+loop()})();
+/* ---------- scroll-driven module graphs ---------- */
+(function(){const cv=$('#cv2');if(!window.THREE)return;
+const mob=innerWidth<860;
+const R=new THREE.WebGLRenderer({canvas:cv,antialias:!mob,alpha:true});R.setPixelRatio(Math.min(devicePixelRatio,mob?1.5:2));
+const S=new THREE.Scene(),C=new THREE.PerspectiveCamera(38,1,.1,60);
+S.add(new THREE.AmbientLight(0x6677aa,.9));
+const a1=new THREE.PointLight(0x00D4FF,3,40);a1.position.set(6,5,7);S.add(a1);const a2=new THREE.PointLight(0x3867FF,3,40);a2.position.set(-6,-3,6);S.add(a2);
+const BL=0x3867FF,CY=0x00D4FF,VI=0x8B5CF6,GR=0x56627c,DK=0x26324d;
+const M=(c,o)=>new THREE.MeshStandardMaterial({color:c,emissive:c,emissiveIntensity:.4,metalness:.5,roughness:.3,transparent:o!==undefined,opacity:o===undefined?1:o});
+const LM=(c,o)=>new THREE.LineBasicMaterial({color:c,transparent:true,opacity:o});
+const sph=(r,c)=>new THREE.Mesh(new THREE.SphereGeometry(r,20,20),M(c));
+const sm=t=>t*t*(3-2*t),cl=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
+const G=[],U=[],ox=mob?0:2.3,oy=mob?1.6:0;let time=0,beat=0;
+for(let i=0;i<7;i++){const g=new THREE.Group();g.visible=false;g.position.set(ox,oy,0);S.add(g);G.push(g)}
+/* 1 hub: five sources streaming into a beating core */
+{const g=G[0],core=sph(.7,BL),ring=new THREE.Mesh(new THREE.TorusGeometry(1.1,.02,12,80),M(CY)),st=[],src=[];g.add(core,ring);
+[BL,CY,VI,0x6f8cff,0xcfeaff].forEach((c,i)=>{const a=i/5*6.283+.4,p=new THREE.Vector3(Math.cos(a)*3.4,Math.sin(a)*2.2,(i%2?1:-1)*.8);src.push(p);const s=sph(.18,c);s.position.copy(p);g.add(s);const pts=new THREE.Points(new THREE.BufferGeometry().setFromPoints(Array(16).fill(p)),new THREE.PointsMaterial({color:c,size:.09}));pts.frustumCulled=false;g.add(pts);st.push(pts)});
+U[0]=()=>{core.scale.setScalar(1+.14*beat);ring.rotation.x=time*.4;ring.scale.setScalar(1+.1*beat);st.forEach((pts,i)=>{const ar=pts.geometry.attributes.position;for(let k=0;k<16;k++){const u=(k/16+time*.22)%1;ar.setXYZ(k,src[i].x*(1-u),src[i].y*(1-u),src[i].z*(1-u))}ar.needsUpdate=true})}}
+/* 2 baseline: 14 nights of sleep as 3D bars against a glass baseline plane */
+{const g=G[1],bars=[];g.position.y=oy-1.6;g.rotation.y=-.35;g.add(new THREE.GridHelper(8,16,DK,0x1b2742));
+D0.sleep.forEach((v,i)=>{const b=new THREE.Mesh(new THREE.BoxGeometry(.32,1,.32),M(i%7>4?VI:BL));b.position.x=(i-6.5)*.5;g.add(b);bars.push(b)});
+const av=avg(D0.sleep)*.45,pl=new THREE.Mesh(new THREE.PlaneGeometry(7.4,1.6).rotateX(-Math.PI/2),new THREE.MeshBasicMaterial({color:CY,transparent:true,opacity:.14,side:2,depthWrite:false})),ed=new THREE.LineSegments(new THREE.EdgesGeometry(pl.geometry),LM(CY,.9));pl.add(ed);g.add(pl);
+U[1]=(w,pp)=>{bars.forEach((b,i)=>{b.scale.y=Math.max(.01,D0.sleep[i]*.45*cl(pp*2.4-i*.05+.2));b.position.y=b.scale.y/2});pl.position.y=av*cl(pp*3)}}
+/* 3 patterns: correlation network, solid = observed, dashed = weak */
+{const g=G[2],P=[[-2.8,1,0],[-1,2,1],[1.2,1.6,-1],[2.8,.4,.5],[-2.2,-1.2,1],[0,-.4,0],[1.6,-1.8,-.5],[-.4,-2.2,-1],[3,2,1]].map(a=>new THREE.Vector3(...a)),ns=P.map((p,i)=>{const s=sph(.2,i%3?CY:VI);s.position.copy(p);g.add(s);return s});
+[[0,5],[1,5],[2,5],[3,5],[4,5],[5,6],[1,2],[7,5]].forEach(([a,b])=>g.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([P[a],P[b]]),LM(CY,.8))));
+[[0,4],[2,3],[6,3],[8,1]].forEach(([a,b])=>{const l=new THREE.Line(new THREE.BufferGeometry().setFromPoints([P[a],P[b]]),new THREE.LineDashedMaterial({color:VI,dashSize:.15,gapSize:.12}));l.computeLineDistances();g.add(l)});
+U[2]=()=>{g.rotation.y=Math.sin(time*.3)*.4;ns.forEach((s,i)=>s.scale.setScalar(1+.25*Math.sin(time*2+i)))}}
+/* 4 insight: live heartbeat trace, evidence panels, confidence arc */
+{const g=G[3],N=140,ls=[0,1,2].map(k=>{const l=new THREE.Line(new THREE.BufferGeometry().setFromPoints(Array.from({length:N},(_,i)=>new THREE.Vector3((i/N-.5)*8,0,-k*.7))),LM(k?BL:CY,k?.4/k:1));l.frustumCulled=false;g.add(l);return l});
+const ec=u=>{u=((u%1)+1)%1;const e=(c,s)=>Math.exp(-Math.pow((u-c)/s,2));return 1.5*e(.3,.018)-.5*e(.26,.015)-.4*e(.34,.02)+.3*e(.6,.06)+.12*e(.1,.05)};
+const tr=new THREE.Mesh(new THREE.TorusGeometry(.75,.04,12,64),M(DK)),arc=new THREE.Mesh(new THREE.TorusGeometry(.75,.07,12,64,6.283*.78),M(CY));tr.position.set(-2.6,-2.2,0);arc.position.copy(tr.position);g.add(tr,arc);
+const ev=[0,1,2].map(k=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(1.7,.95),new THREE.MeshBasicMaterial({color:BL,transparent:true,opacity:.14,side:2,depthWrite:false}));m.add(new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry),LM(CY,.5)));m.position.set(-.4+k*1.5,-2.2+k*.1,-.4*k);g.add(m);return m});
+U[3]=()=>{ls.forEach((l,k)=>{const a=l.geometry.attributes.position;for(let i=0;i<N;i++)a.setY(i,ec(i/N*.9-time*.35+k*.04)+.6);a.needsUpdate=true});arc.rotation.z=time*.3;ev.forEach((m,k)=>m.rotation.y=Math.sin(time*.5+k)*.2)}}
+/* 5 what-if: historical surface (grey) vs hypothetical surface (cyan) diverging */
+{const g=G[4],mk=(c,o)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(6,6,26,26).rotateX(-Math.PI/2),new THREE.MeshBasicMaterial({color:c,wireframe:true,transparent:true,opacity:o}));m.frustumCulled=false;g.add(m);return m};
+const hs=mk(GR,.45),sc=mk(CY,.75),ball=sph(.16,0xffffff);g.add(ball);g.rotation.x=.12;
+const f=(x,z,a,t)=>a*(Math.sin(x*.8+t)*Math.cos(z*.7-t*.6)+.5*Math.sin(x*.4+z*.5)),base=hs.geometry.attributes.position.array.slice();
+U[4]=(w,pp)=>{const a=hs.geometry.attributes.position,b=sc.geometry.attributes.position,t=time*.5;for(let i=0;i<a.count;i++){const x=base[i*3],z=base[i*3+2];a.setY(i,f(x,z,.35,t));b.setY(i,f(x,z,.35+.9*pp,t)+.7*pp)}a.needsUpdate=b.needsUpdate=true;const bx=-2.5+5*pp;ball.position.set(bx,f(bx,0,.35+.9*pp,t)+.7*pp+.2,0);g.rotation.y=Math.sin(time*.25)*.3}}
+/* 6 experiments: baseline strand vs experiment strand lighting up day by day */
+{const g=G[5],N=16,mkS=(off,c,r)=>{const ps=[],ms=[];for(let i=0;i<N;i++){const a=i*.62+off,p=new THREE.Vector3(Math.cos(a)*1.5,(i/(N-1)-.5)*5,Math.sin(a)*1.5);ps.push(p);const s=sph(r,c);s.position.copy(p);g.add(s);ms.push(s)}g.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(ps),LM(c,.6)));return ms};
+mkS(Math.PI,GR,.1);const ex=mkS(0,CY,.17);
+U[5]=(w,pp)=>{g.rotation.y=time*.25;const n=Math.floor(pp*N*1.05);ex.forEach((s,i)=>{const on=i<n,c=on?CY:DK;s.material.color.setHex(c);s.material.emissive.setHex(c);s.material.emissiveIntensity=on?.9:.05;s.scale.setScalar(on?1+(i===n-1?beat*.5:0):.6)})}}
+/* 7 privacy: local shell, consent gate ring, data that stays inside */
+{const g=G[6],sh=new THREE.Mesh(new THREE.IcosahedronGeometry(2.2,1),new THREE.MeshBasicMaterial({color:BL,wireframe:true,transparent:true,opacity:.45})),core=sph(.6,CY),gate=new THREE.Mesh(new THREE.TorusGeometry(2.6,.03,12,100),M(VI)),pts=[];g.add(sh,core,gate);
+for(let i=0;i<26;i++){const s=sph(.06,0xcfeaff);g.add(s);pts.push([s,Math.random()*6.28,Math.random()*3.1,.6+Math.random()])}
+U[6]=()=>{sh.rotation.y=time*.1;core.scale.setScalar(1+.12*beat);gate.rotation.x=time*.3;gate.rotation.y=time*.2;pts.forEach(([s,a,b,sp])=>{const r=2.7+.9*Math.abs(Math.sin(time*.5*sp+a)),q=b+time*.1,w=a+time*.2*sp;s.position.set(r*Math.sin(q)*Math.cos(w),r*Math.cos(q),r*Math.sin(q)*Math.sin(w))})}}
+const tz=$$('.tz'),rail=$$('#rail i'),ov=$('#ov2'),rl=$('#rail'),clk=new THREE.Clock();let mx=0,my=0,tx=0,ty=0,cy=2;
+addEventListener('pointermove',e=>{mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5},{passive:true});
+function size(){R.setSize(innerWidth,innerHeight,false);C.aspect=innerWidth/innerHeight;C.updateProjectionMatrix()}size();addEventListener('resize',size);
+function loop(){requestAnimationFrame(loop);const vh=innerHeight,y=scrollY,m=$('#mods'),s1=m.offsetTop,h=m.offsetHeight,t1=s1-vh,end=s1+h-vh;
+const vis=cvOn&&y>t1+vh*.4&&y<end+vh*.7;cv.style.display=vis?'block':'none';ov.style.display=vis?'block':'none';rl.style.display=vis?'flex':'none';if(!vis)return;
+time=clk.getElapsedTime();beat=Math.exp(-((time*1.1)%1)*6);tx+=(mx-tx)*.05;ty+=(my-ty)*.05;
+cv.style.opacity=cl((y-t1-vh*.5)/(vh*.5))*(1-cl((y-end)/(vh*.5)));
+const p=cl((y-s1)/(h-vh)),t=p*7,ci=Math.min(6,Math.floor(t)),show=y>s1-vh*.3&&y<end+vh*.2;
+tz.forEach((e,i)=>e.classList.toggle('on',show&&i===ci));rail.forEach((e,i)=>e.classList.toggle('on',i===ci));
+G.forEach((g,i)=>{const w=cl(1-Math.abs(t-(i+.5))*1.5);g.visible=w>.02;if(!g.visible)return;g.scale.setScalar(.35+.65*sm(w));U[i](sm(w),cl(t-i))});
+cy+=((ci===4?4.2:2.2)-cy)*.04;C.position.set(tx*3,cy+ty*1.5,mob?15:11);C.lookAt(0,0,0);R.render(S,C)}
+loop()})();
+route();
+</script></body></html>
